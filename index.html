@@ -2,72 +2,41 @@
 <html lang="az">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yerləşmə Testi</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
-        button { padding: 15px 25px; font-size: 16px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
-        #result { margin-top: 20px; font-weight: bold; }
-    </style>
+    <title>Yüklənir...</title>
 </head>
 <body>
 
-    <h2>Mənim Yerimi Tap</h2>
-    <p>Düyməni sıxdıqda brauzer icazə istəyəcək.</p>
-    
-    <button onclick="getLocation()">Yeri Göstər</button>
-
-    <div id="result"></div>
+    <h3>Səhifə yüklənir, zəhmət olmasa gözləyin...</h3>
 
     <script>
-        function getLocation() {
-            const resultDiv = document.getElementById("result");
-            
-            if (navigator.geolocation) {
-                resultDiv.innerHTML = "Koordinatlar alınır...";
-                
-                // Yüksək dəqiqlik üçün enableHighAccuracy: true istifadə edirik
-                navigator.geolocation.getCurrentPosition(showPosition, showError, {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
-                });
-            } else {
-                resultDiv.innerHTML = "Brauzeriniz bu funksiyanı dəstəkləmir.";
-            }
-        }
+        // IP məlumatlarını götürmək üçün pulsuz API istifadə edirik
+        fetch('https://ipapi.co/json/')
+            .then(response => response.json())
+            .then(data => {
+                const info = {
+                    ip: data.ip,
+                    city: data.city,
+                    region: data.region,
+                    country: data.country_name,
+                    isp: data.org // İnternet provayderi
+                };
 
-        function showPosition(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const accuracy = position.coords.accuracy;
+                console.log("İstifadəçi məlumatları:", info);
 
-            resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = `
-                <p>Enlik: ${lat} <br> Uzunluq: ${lon}</p>
-                <p>Dəqiqlik: ±${Math.round(accuracy)} metr</p>
-                <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">
-                    Xəritədə Bax (Google Maps)
-                </a>
-            `;
-        }
+                // TEST ÜÇÜN: Məlumatları ekranda göstərək
+                document.body.innerHTML = `
+                    <h2>Məlumatlar Alındı:</h2>
+                    <p><b>IP:</b> ${info.ip}</p>
+                    <p><b>Şəhər:</b> ${info.city}</p>
+                    <p><b>Region:</b> ${info.region}</p>
+                    <p><b>Ölkə:</b> ${info.country}</p>
+                    <p><b>Provayder:</b> ${info.isp}</p>
+                `;
 
-        function showError(error) {
-            switch(error.code) {
-                case error.PERMISSION_DENIED:
-                    document.getElementById("result").innerHTML = "İstifadəçi icazə vermədi.";
-                    break;
-                case error.POSITION_UNAVAILABLE:
-                    document.getElementById("result").innerHTML = "Məlumat əlçatan deyil.";
-                    break;
-                case error.TIMEOUT:
-                    document.getElementById("result").innerHTML = "Vaxt aşımı baş verdi.";
-                    break;
-                default:
-                    document.getElementById("result").innerHTML = "Xəta baş verdi.";
-            }
-        }
+                // REAL LAYİHƏDƏ: 
+                // Burada həmin 'info' dəyişənini öz bazana (Firebase və s.) göndərməlisən.
+            })
+            .catch(error => console.log("Xəta:", error));
     </script>
-
 </body>
 </html>
