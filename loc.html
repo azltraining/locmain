@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yerləşmə Testi</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        button { padding: 15px 25px; font-size: 16px; cursor: pointer; background: #28a745; color: white; border: none; border-radius: 5px; }
+        #result { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h2>Mənim Yerimi Tap</h2>
+    <p>Düyməni sıxdıqda brauzer icazə istəyəcək.</p>
+    
+    <button onclick="getLocation()">Yeri Göstər</button>
+
+    <div id="result"></div>
+
+    <script>
+        function getLocation() {
+            const resultDiv = document.getElementById("result");
+            
+            if (navigator.geolocation) {
+                resultDiv.innerHTML = "Koordinatlar alınır...";
+                
+                // Yüksək dəqiqlik üçün enableHighAccuracy: true istifadə edirik
+                navigator.geolocation.getCurrentPosition(showPosition, showError, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            } else {
+                resultDiv.innerHTML = "Brauzeriniz bu funksiyanı dəstəkləmir.";
+            }
+        }
+
+        function showPosition(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            const accuracy = position.coords.accuracy;
+
+            resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = `
+                <p>Enlik: ${lat} <br> Uzunluq: ${lon}</p>
+                <p>Dəqiqlik: ±${Math.round(accuracy)} metr</p>
+                <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank">
+                    Xəritədə Bax (Google Maps)
+                </a>
+            `;
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("result").innerHTML = "İstifadəçi icazə vermədi.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("result").innerHTML = "Məlumat əlçatan deyil.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("result").innerHTML = "Vaxt aşımı baş verdi.";
+                    break;
+                default:
+                    document.getElementById("result").innerHTML = "Xəta baş verdi.";
+            }
+        }
+    </script>
+
+</body>
+</html>
